@@ -10,6 +10,8 @@ public class ReverseArr {
 
     public static void reverseArr(int[] arr) {
         int left = 0, right = arr.length - 1;
+        System.out.println("Left: " + left + ", Right: " + right);
+        // Swap elements until left and right pointers meet
         while(left < right) {
             int temp = arr[left];
             arr[left] = arr[right];

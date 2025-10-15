@@ -9,5 +9,4 @@ public class PointerDemo {
 }
 class InnerPointerDemo {
     int x = 10;
-    
 }
