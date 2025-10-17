@@ -9,9 +9,9 @@ public class fibonacchiRecursion {
     }
     public static void main(String[] args) {
         int a = 0, b = 1;
-        System.out.println(a); // Print the first Fibonacci number
-        System.out.println(b); // Print the second Fibonacci number
-        int n = 5; // Change this value to print more or fewer Fibonacci numbers
-        fibPrint(a, b, n - 2); // Start with the first two Fibonacci number
+        System.out.println(a);
+        System.out.println(b); 
+        int n = 5; 
+        fibPrint(a, b, n - 2); 
     }
 }
