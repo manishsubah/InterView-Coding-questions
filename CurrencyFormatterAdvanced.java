@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 public class CurrencyFormatterAdvanced {
     
-    // Enum for supported countries
+
     private enum Country {
         US(Locale.US, "US"),
         INDIA(new Locale("en", "IN"), "India"),
@@ -30,7 +30,7 @@ public class CurrencyFormatterAdvanced {
         }
     }
     
-    // Method to format currency with validation
+
     private static String formatCurrency(double amount, Locale locale) {
         if (amount < 0 || amount > Math.pow(10, 9)) {
             throw new IllegalArgumentException("Amount must be between 0 and 10^9");
@@ -40,7 +40,7 @@ public class CurrencyFormatterAdvanced {
         return formatter.format(amount);
     }
     
-    // Method to format currency for all countries
+    
     private static Map<String, String> formatAllCurrencies(double payment) {
         Map<String, String> formattedCurrencies = new LinkedHashMap<>();
         
@@ -56,7 +56,7 @@ public class CurrencyFormatterAdvanced {
         return formattedCurrencies;
     }
     
-    // Method to print formatted currencies
+ 
     private static void printFormattedCurrencies(Map<String, String> currencies) {
         for (Map.Entry<String, String> entry : currencies.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
@@ -69,13 +69,13 @@ public class CurrencyFormatterAdvanced {
         try {
             double payment = scanner.nextDouble();
             
-            // Validate input
+          
             if (payment < 0 || payment > Math.pow(10, 9)) {
                 System.err.println("Error: Payment must be between 0 and 10^9");
                 return;
             }
             
-            // Format and print all currencies
+         
             Map<String, String> formattedCurrencies = formatAllCurrencies(payment);
             printFormattedCurrencies(formattedCurrencies);
             
