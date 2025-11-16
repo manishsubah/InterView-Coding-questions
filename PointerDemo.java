@@ -10,3 +10,19 @@ public class PointerDemo {
 class InnerPointerDemo {
     int x = 10;
 }
+
+
+
+/*
+ A pointer is a variable that stores the memory address of another variable or object.
+
+👉 Instead of storing the value directly, it stores where the value is located in memory.
+
+Think of it like:
+
+A pointer = the address of a house
+
+The actual data = the house
+
+You can reach the data (house) only through the address (pointer)
+ */
