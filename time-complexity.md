@@ -1,5 +1,16 @@
 # Time Complexity Explained in Simple Words
 
+input size and running time:
+if size is n => n (linear)
+if size is increased by 2 times => 4 times
+if size is increased by 3 
+
+time complexity directly proportional to input n (linear way)
+
+-> Best case = omega(1)
+-> Average case = thita
+-> Worst case = big O
+
 ## What is Time Complexity?
 
 **Time complexity** is a way to describe how long an algorithm takes to run as the size of the input grows. Think of it as answering the question: "If I give this program more data, how much slower will it become?"
