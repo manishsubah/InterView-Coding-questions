@@ -3,7 +3,7 @@
 input size and running time:
 if size is n => n (linear)
 if size is increased by 2 times => 4 times
-if size is increased by 3 
+if size is increased by 3 times => 9 times
 
 time complexity directly proportional to input n (linear way)
 
