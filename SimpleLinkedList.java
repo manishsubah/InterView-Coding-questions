@@ -1,17 +1,4 @@
-/**
- * Simple Linked List Program - Understanding References (Pointers in Java)
- * 
- * In Java, we don't have explicit pointers like C/C++, but we use "references"
- * which work similarly. A reference points to an object in memory.
- * 
- * This program demonstrates:
- * - How references work (similar to pointers)
- * - Creating a linked list
- * - Adding nodes
- * - Displaying the list
- * - Searching for a value
- * - Deleting a node
- */
+
 class Node {
     int data;        // Data stored in the node
     Node next;       // Reference (pointer) to the next node
