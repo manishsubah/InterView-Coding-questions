@@ -14,8 +14,7 @@ public class JavaString {
         System.out.println(
             String.valueOf(A.charAt(0)).toUpperCase() + A.substring(1) + " " +
             String.valueOf(B.charAt(0)).toUpperCase() + B.substring(1)
-        ); // Concatenate the first character of each string with the rest of the string, capitalizing the first character
-
+        ); 
     }
 
     private static String capitalize(String str) {
