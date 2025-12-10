@@ -5,6 +5,8 @@ This repository contains Java implementations and practice problems to prepare f
 ---
 
 ## Contents
+- **`Essential_Data_Structures.md`**: ⭐ **START HERE!** Priority guide to the most important DS (Arrays, HashMap, Strings, Stack, Queue, Linked List) with practice checklist.
+- **`100_Array_Problems_Easy_to_Medium.md`**: 📋 Complete list of 100 array problems from easy to medium with descriptions and practice plan.
 - `DSA_Interview_Learning_Guide.md`: Step-by-step study plan, examples, and a 1-week schedule.
 - Java source files (e.g., `ReverseArr.java`, `Palindrome.java`, etc.).
 - `.gitignore` configured to avoid committing compiled artifacts (e.g., `*.class`).
