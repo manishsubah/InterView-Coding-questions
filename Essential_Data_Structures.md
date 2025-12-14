@@ -6,7 +6,7 @@
 
 ## 🥇 Tier 1: MUST KNOW (Start Here - 80% of Easy Problems)
 
-### 1. **Arrays** ⭐⭐⭐⭐⭐
+### 1. **Arrays** 
 **Why:** Foundation of everything. Used in 90% of problems.
 
 **What it is:** Fixed-size container holding elements in order.
