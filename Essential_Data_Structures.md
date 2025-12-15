@@ -30,7 +30,7 @@ int[] arr = {1, 2, 3, 4, 5};
 
 ---
 
-### 2. **HashMap / HashSet** ⭐⭐⭐⭐⭐
+### 2. **HashMap / HashSet** 
 **Why:** Solves "find/check if exists" problems instantly. Used in 60% of problems.
 
 **What it is:** Stores key-value pairs. Lookup is O(1) average.
