@@ -62,7 +62,7 @@ set.contains(10);           // O(1) - returns true
 
 ---
 
-### 3. **Strings** ⭐⭐⭐⭐
+### 3. **Strings** 
 **Why:** Often treated as arrays of characters. Very common in interviews.
 
 **What it is:** Immutable sequence of characters in Java.
