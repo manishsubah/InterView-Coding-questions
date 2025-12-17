@@ -91,7 +91,7 @@ StringBuilder sb = new StringBuilder();  // For many concatenations
 
 ## 🥈 Tier 2: VERY IMPORTANT (Learn After Tier 1)
 
-### 4. **Stack** ⭐⭐⭐⭐
+### 4. **Stack** ⭐⭐
 **Why:** Perfect for "matching pairs" and "undo" problems. Simple concept.
 
 **What it is:** Last-In-First-Out (LIFO) - like a stack of plates.
