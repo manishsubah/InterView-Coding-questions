@@ -120,7 +120,7 @@ stack.peek();      // Look at top without removing
 
 ---
 
-### 5. **Queue** ⭐⭐
+### 5. **Queue** ⭐
 **Why:** Essential for BFS (breadth-first search) later. Simple FIFO concept.
 
 **What it is:** First-In-First-Out (FIFO) - like a line at a store.
