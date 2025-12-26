@@ -145,7 +145,7 @@ queue.peek();       // Look at front without removing
 
 ---
 
-### 6. **Linked List** ⭐⭐
+### 6. **Linked List** ⭐
 **Why:** Teaches pointer manipulation. Common interview topic.
 
 **What it is:** Nodes connected by pointers. Dynamic size.
