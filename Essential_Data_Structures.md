@@ -181,7 +181,7 @@ class ListNode {
 
 ## 🥉 Tier 3: IMPORTANT (Learn After Tier 2)
 
-### 7. **Two Pointers Technique** ⭐⭐⭐⭐
+### 7. **Two Pointers Technique** ⭐⭐⭐
 **Why:** Not a DS, but a pattern that makes arrays/strings problems easy.
 
 **What it is:** Use two indices moving through array/string.
