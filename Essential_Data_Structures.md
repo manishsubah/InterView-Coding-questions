@@ -202,7 +202,7 @@ class ListNode {
 
 ---
 
-### 8. **Sliding Window** ⭐
+### 8. **Sliding Window** 
 **Why:** Pattern for substring/subarray problems. Very common.
 
 **What it is:** Maintain a window that slides through array/string.
