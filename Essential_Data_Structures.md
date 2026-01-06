@@ -10,7 +10,7 @@
 **Why:** Foundation of everything. Used in 90% of problems.
 
 **What it is:** Fixed-size container holding elements in order.
-```java
+
 int[] arr = {1, 2, 3, 4, 5};
 ```
 
