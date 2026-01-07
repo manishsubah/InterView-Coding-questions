@@ -4,7 +4,7 @@
 
 ---
 
-## 🥇 Tier 1: MUST KNOW (Start Here - 80% of Easy Problems)
+##  Tier 1: MUST KNOW (Start Here - 80% of Easy Problems)
 
 ### 1. **Arrays** 
 **Why:** Foundation of everything. Used in 90% of problems.
