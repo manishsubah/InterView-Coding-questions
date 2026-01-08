@@ -1,4 +1,4 @@
-# Essential Data Structures: Start Here! 🎯
+# Essential Data Structures: Start Here! 
 
 **Priority order: Learn these first, master them, then move to advanced topics.**
 
