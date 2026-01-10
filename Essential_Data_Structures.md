@@ -19,7 +19,7 @@ int[] arr = {1, 2, 3, 4, 5};
 - Search: Loop through → O(n)
 - Insert/Delete: Requires shifting → O(n)
 
-**Practice Problems (Easy):*
+**Practice Problems (Easy):
 - ✅ Find max/min element
 - ✅ Reverse array
 - ✅ Two Sum (find pair that adds to target)
