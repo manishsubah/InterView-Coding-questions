@@ -316,7 +316,7 @@ public class ReverseLinkedList {
 - Day 6: Timed review: redo 4 earlier problems faster.
 - Day 7: Rest/light review; explain 3 solutions out loud.
 
----
+--
 
 ## Quick Checkpoint (Do These Now)
 - Reverse an array in-place
