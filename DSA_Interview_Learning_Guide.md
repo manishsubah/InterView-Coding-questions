@@ -77,7 +77,7 @@ public class ReverseStringEasy {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(reverse("hello")); // "olleh"
+		System.out.println(reverse("hello")); // "olleh
 	}
 }
 ```
@@ -333,5 +333,3 @@ For each, write a 2–3 sentence explanation of your approach.
 - Aim for: clear variable names, `O(n)` where reasonable, and brief post-solution notes.
 
 If you want this as a printable PDF, let me know and I’ll export it.
-
-
