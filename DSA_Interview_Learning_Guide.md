@@ -77,7 +77,7 @@ public class ReverseStringEasy {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(reverse("hello")); // "olleh
+		System.out.println(reverse("hello")); // "olle
 	}
 }
 ```
