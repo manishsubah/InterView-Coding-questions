@@ -80,7 +80,6 @@ public class ReverseStringEasy {
 		System.out.println(reverse("hello")); 
 	}
 }
-```
 
 Complexity: Time `O(n)`, Space `O(n)` for char array (or `O(1)` if mutable array).
 
