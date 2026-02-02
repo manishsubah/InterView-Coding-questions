@@ -134,7 +134,6 @@ public class MaxInArray {
 	}
 }
 
----
 
 ## Lesson 2 — Arrays & Strings: Frequency and Hashing (Easy)
 
