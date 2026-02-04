@@ -163,7 +163,7 @@ public class AnagramCheck {
 		return true;
 	}
 }
-```
+``
 
 Example: First non-repeating character index
 
