@@ -1,0 +1,12 @@
+# Hide compiled Java class files from file explorer
+*.class
+
+# Hide build artifacts
+target/
+bin/
+out/
+build/
+
+# Hide IDE files
+.idea/
+.vscode/
