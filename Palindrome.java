@@ -3,7 +3,7 @@ public class Palindrome {
         int left = 0, right = str.length() - 1;
         System.out.println("Length of the string = " + str.length());
         System.out.println("left = " + left + ", right = " + right);
-        // Check if the string is
+        // Check if the string
         while(left < right) {
             if(str.charAt(left) != str.charAt(right)) {
                 return false;
