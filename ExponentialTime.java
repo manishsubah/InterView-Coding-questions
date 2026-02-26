@@ -10,7 +10,7 @@ import java.util.*;
 
 public class ExponentialTime {
     
-    // Example 1: Naive recursive Fibonacci
+    // Example 1: recursive Fibonacci
     public static long fibonacci(int n) {
         if (n <= 1) {
             return n;
