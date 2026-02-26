@@ -1,6 +1,7 @@
 public class MaxInArray {
 	public static int max(int[] numbers) {
-		if (numbers == null || numbers.length == 0) throw new IllegalArgumentException("Array must not be null or empty");
+		if (numbers == null || numbers.length == 0) throw new 
+		IllegalArgumentException("Array must not be null or empty");
 		int best = Integer.MIN_VALUE;
 		for (int value : numbers) {
 			if (value > best) best = value;
@@ -20,5 +21,3 @@ public class MaxInArray {
 		}
 	}
 }
-
-
