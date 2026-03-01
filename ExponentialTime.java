@@ -4,7 +4,7 @@
  * These operations double in time with each additional input element.
  * Time Complexity: O(2ⁿ) or O(cⁿ) where c > 1
  * 
- * VERY SLOW! Should be avoided when possible. Use memoization or dynamic programming.
+ * VERY SLOW! Should be avoided when possible. Use memoization or dynamic programming
  */
 import java.util.*;
 
