@@ -2,7 +2,7 @@ public class ReverseString {
     public static void main(String[] args) {
         String original = "Hello, World!";
 
-        //usin
+        //usi
         StringBuilder reversedBuilder = new StringBuilder(original).reverse();
         System.out.println("Reversed String: " + reversedBuilder);
 
