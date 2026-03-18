@@ -1,5 +1,5 @@
 /**
- * O(1) - Constant Time Complexity Examples
+ * O(1) - Constant Time Complexity Example
  * 
  * These operations take the same amount of time regardless of input size.
  * Time Complexity: O(1)
