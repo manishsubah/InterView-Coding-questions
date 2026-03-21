@@ -15,7 +15,7 @@ public class ReverseStringEasy {
 	}
 
 	public static void main(String[] args) {
-		String[] samples = {"hello", "racecar", "", "a", "Interview"};
+		String[] samples = {"hello", "racecar", "manish", "a", "Interview"};
 		for (String s : samples) {
 			System.out.println("reverse(\"" + s + "\") => " + reverse(s));
 		}
