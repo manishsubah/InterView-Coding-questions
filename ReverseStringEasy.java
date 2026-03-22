@@ -13,7 +13,7 @@ public class ReverseStringEasy {
 		}
 		return new String(characters);
 	}
-
+//
 	public static void main(String[] args) {
 		String[] samples = {"hello", "racecar", "manish", "a", "Interview"};
 		for (String s : samples) {

@@ -11,8 +11,6 @@ class InnerPointerDemo {
     int x = 10;
 }
 
-
-
 /*
  A pointer is a variable that stores the memory address of another variable or object.
 
