@@ -12,7 +12,7 @@ public class TwoSum {
 			}
 			valueToIndex.put(numbers[i], i);
 		}
-		return null; // no solution
+		return null; // no
 	}
 
 	private static String formatPair(int[] pair) {
