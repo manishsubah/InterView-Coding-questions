@@ -4,7 +4,7 @@
 
 **For hiring teams:** This repo shows deliberate preparation: working implementations (not snippets), progression from fundamentals (arrays, strings, recursion) to structures like linked lists, plus runnable time-complexity examples. Supporting notes and problem lists live under `resources/` for depth; the root holds executable Java sources you can review or run.
 
-**Stack:** Java (JDK 8+).
+**Stack:** Java (JDK 8+)
 
 **Quick run** (from repo root):
 
