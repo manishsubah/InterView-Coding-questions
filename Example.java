@@ -1,5 +1,5 @@
 
-public class Example { //testing
+public class Example { //
 public static void main(String[] args) {
     StringBuilder sb = new StringBuilder("hello");
     System.out.println("String:-" + sb);
