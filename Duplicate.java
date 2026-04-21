@@ -1,5 +1,5 @@
 public class Duplicate {
-    public static boolean isPalindrome(String str) { //int[] arr
+    public static boolean isPalindrome(String str) { //int[
     int left = 0;
     int right = str.length() - 1;
 
