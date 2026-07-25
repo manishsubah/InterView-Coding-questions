@@ -3,8 +3,8 @@
 .SYNOPSIS
     Auto-commit and push changes for the InterViewCoding repository only.
 .DESCRIPTION
-    Scheduled by Windows Task Scheduler. Commits only when there are actual
-    file changes, pulls with rebase before push, and logs all activity.
+    Triggered on Windows logon via Task Scheduler. Appends a timestamp to
+    auto-sync-log.md, commits all changes, pulls with rebase, and pushes.
 #>
 
 $ErrorActionPreference = "Stop"
@@ -12,6 +12,7 @@ $ErrorActionPreference = "Stop"
 $RepoPath = "C:\SUBAH\PROGRAMMING\InterViewCoding"
 $ExpectedRemote = "git@github-interviewcoding:manishsubah/InterView-Coding-questions.git"
 $Branch = "master"
+$SyncLogFile = Join-Path $RepoPath "auto-sync-log.md"
 $LogDir = Join-Path $RepoPath "logs"
 $LogFile = Join-Path $LogDir "auto-commit.log"
 $LockFile = Join-Path $env:TEMP "InterViewCoding-auto-commit.lock"
@@ -41,6 +42,27 @@ function Invoke-Git {
         throw "git $($GitArgs -join ' ') failed (exit $LASTEXITCODE): $detail"
     }
     return $output
+}
+
+function Add-SyncLogEntry {
+    $entryTime = Get-Date -Format "yyyy-MM-dd HH:mm"
+    $entryLine = "- $entryTime - synced on logon"
+
+    if (-not (Test-Path $SyncLogFile)) {
+        @(
+            "# Auto Sync Log",
+            "",
+            "Timestamped entries added automatically on Windows logon.",
+            "",
+            $entryLine
+        ) | Set-Content -Path $SyncLogFile -Encoding UTF8
+    }
+    else {
+        Add-Content -Path $SyncLogFile -Value $entryLine -Encoding UTF8
+    }
+
+    Write-Log "Appended sync log entry: $entryLine"
+    return $entryTime
 }
 
 $lockHandle = $null
@@ -73,6 +95,8 @@ try {
         throw "Remote URL mismatch. Expected '$ExpectedRemote', got '$actualRemote'."
     }
 
+    $syncTime = Add-SyncLogEntry
+
     $status = (Invoke-Git @("status", "--porcelain") | Out-String).Trim()
     $aheadCount = 0
     try {
@@ -86,7 +110,7 @@ try {
     }
 
     if ([string]::IsNullOrWhiteSpace($status) -and $aheadCount -eq 0) {
-        Write-Log "No changes detected. Nothing to commit."
+        Write-Log "No changes detected after sync log append. Nothing to commit."
         exit 0
     }
 
@@ -99,7 +123,7 @@ try {
             Write-Log "No staged changes after add. Nothing to commit."
         }
         else {
-            $commitMessage = "chore: daily backup $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+            $commitMessage = "chore: auto sync on logon $syncTime"
             Invoke-Git @("commit", "-m", $commitMessage) | Out-Null
             Write-Log "Committed: $commitMessage"
         }
