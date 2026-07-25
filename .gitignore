@@ -16,4 +16,6 @@ hs_err_pid*
 /.vscode/
 *.iml
 
+# Auto-commit logs
+/logs/
 
