@@ -74,23 +74,39 @@ try {
     }
 
     $status = (Invoke-Git @("status", "--porcelain") | Out-String).Trim()
-    if ([string]::IsNullOrWhiteSpace($status)) {
+    $aheadCount = 0
+    try {
+        $tracking = (Invoke-Git @("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}") | Out-String).Trim()
+        if ($tracking) {
+            $aheadCount = [int](Invoke-Git @("rev-list", "--count", "$tracking..HEAD") | Out-String).Trim()
+        }
+    }
+    catch {
+        Write-Log "Could not determine upstream ahead count; continuing with working tree check only." "WARN"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($status) -and $aheadCount -eq 0) {
         Write-Log "No changes detected. Nothing to commit."
         exit 0
     }
 
-    Write-Log "Changes detected. Staging and committing."
-    Invoke-Git @("add", "-A") | Out-Null
+    if (-not [string]::IsNullOrWhiteSpace($status)) {
+        Write-Log "Changes detected. Staging and committing."
+        Invoke-Git @("add", "-A") | Out-Null
 
-    & git -C $RepoPath diff --cached --quiet
-    if ($LASTEXITCODE -eq 0) {
-        Write-Log "No staged changes after add. Nothing to commit."
-        exit 0
+        & git -C $RepoPath diff --cached --quiet
+        if ($LASTEXITCODE -eq 0) {
+            Write-Log "No staged changes after add. Nothing to commit."
+        }
+        else {
+            $commitMessage = "chore: daily backup $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+            Invoke-Git @("commit", "-m", $commitMessage) | Out-Null
+            Write-Log "Committed: $commitMessage"
+        }
     }
-
-    $commitMessage = "chore: daily backup $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-    Invoke-Git @("commit", "-m", $commitMessage) | Out-Null
-    Write-Log "Committed: $commitMessage"
+    elseif ($aheadCount -gt 0) {
+        Write-Log "No working tree changes, but $aheadCount local commit(s) are ahead of remote. Retrying push."
+    }
 
     Write-Log "Syncing with remote before push."
     try {
