@@ -36,10 +36,14 @@ function Write-Log {
 
 function Invoke-Git {
     param([string[]]$GitArgs)
+    $prevErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     $output = & git -C $RepoPath @GitArgs 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    $exitCode = $LASTEXITCODE
+    $ErrorActionPreference = $prevErrorAction
+    if ($exitCode -ne 0) {
         $detail = ($output | Out-String).Trim()
-        throw "git $($GitArgs -join ' ') failed (exit $LASTEXITCODE): $detail"
+        throw "git $($GitArgs -join ' ') failed (exit $exitCode): $detail"
     }
     return $output
 }
