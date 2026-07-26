@@ -1,8 +1,11 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Launcher for logon auto-commit with network delay.
+    Starts the background auto-commit watcher at user logon.
 #>
 
-Start-Sleep -Seconds 120
-& "C:\SUBAH\PROGRAMMING\InterViewCoding\scripts\auto-commit-push.ps1"
+$WatcherPath = "C:\SUBAH\PROGRAMMING\InterViewCoding\scripts\AutoCommitWatcher.ps1"
+
+Start-Process -FilePath "powershell.exe" `
+    -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", "`"$WatcherPath`"" `
+    -WindowStyle Hidden

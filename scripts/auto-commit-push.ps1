@@ -3,9 +3,16 @@
 .SYNOPSIS
     Auto-commit and push changes for the InterViewCoding repository only.
 .DESCRIPTION
-    Triggered on Windows logon via Task Scheduler. Appends a timestamp to
-    auto-sync-log.md, commits all changes, pulls with rebase, and pushes.
+    Appends a timestamp to auto-sync-log.md, commits all changes, pulls with
+    rebase, and pushes. Supports retry on transient network failures.
+.PARAMETER TriggerReason
+    Logon, Wake, Unlock, or Manual — used in sync log and commit message.
 #>
+
+param(
+    [ValidateSet("Logon", "Wake", "Unlock", "Manual")]
+    [string]$TriggerReason = "Manual"
+)
 
 $ErrorActionPreference = "Stop"
 
@@ -17,6 +24,8 @@ $LogDir = Join-Path $RepoPath "logs"
 $LogFile = Join-Path $LogDir "auto-commit.log"
 $LockFile = Join-Path $env:TEMP "InterViewCoding-auto-commit.lock"
 $MaxLogBytes = 1MB
+$GitRetryAttempts = 3
+$GitRetryDelaySeconds = 30
 
 $env:GIT_TERMINAL_PROMPT = "0"
 
@@ -48,15 +57,60 @@ function Invoke-Git {
     return $output
 }
 
+function Test-IsNetworkError {
+    param([string]$Message)
+    $patterns = @(
+        "Could not resolve host",
+        "Name or service not known",
+        "Connection timed out",
+        "Connection refused",
+        "Network is unreachable",
+        "Failed to connect",
+        "ssh: connect to host"
+    )
+    foreach ($pattern in $patterns) {
+        if ($Message -like "*$pattern*") {
+            return $true
+        }
+    }
+    return $false
+}
+
+function Invoke-GitWithRetry {
+    param(
+        [string[]]$GitArgs,
+        [string]$OperationName
+    )
+
+    for ($attempt = 1; $attempt -le $GitRetryAttempts; $attempt++) {
+        try {
+            return Invoke-Git -GitArgs $GitArgs
+        }
+        catch {
+            $isLast = ($attempt -eq $GitRetryAttempts)
+            if ((Test-IsNetworkError -Message $_.Exception.Message) -and -not $isLast) {
+                Write-Log "$OperationName failed (attempt $attempt/$GitRetryAttempts). Retrying in $GitRetryDelaySeconds s..." "WARN"
+                Start-Sleep -Seconds $GitRetryDelaySeconds
+            }
+            else {
+                throw
+            }
+        }
+    }
+}
+
 function Add-SyncLogEntry {
+    param([string]$Reason)
+
+    $reasonLabel = $Reason.ToLowerInvariant()
     $entryTime = Get-Date -Format "yyyy-MM-dd HH:mm"
-    $entryLine = "- $entryTime - synced on logon"
+    $entryLine = "- $entryTime - synced on $reasonLabel"
 
     if (-not (Test-Path $SyncLogFile)) {
         @(
             "# Auto Sync Log",
             "",
-            "Timestamped entries added automatically on Windows logon.",
+            "Timestamped entries added automatically on Windows logon, wake, or unlock.",
             "",
             $entryLine
         ) | Set-Content -Path $SyncLogFile -Encoding UTF8
@@ -73,7 +127,7 @@ $lockHandle = $null
 try {
     $lockDir = Split-Path $LockFile -Parent
     if (-not (Test-Path $lockDir)) {
-        New-Item -ItemType Directory -Path $lockDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $LockDir -Force | Out-Null
     }
     $lockHandle = [System.IO.File]::Open(
         $LockFile,
@@ -88,7 +142,7 @@ catch {
 }
 
 try {
-    Write-Log "Auto-commit started."
+    Write-Log "Auto-commit started (trigger: $TriggerReason)."
 
     if (-not (Test-Path (Join-Path $RepoPath ".git"))) {
         throw "Not a git repository: $RepoPath"
@@ -99,7 +153,7 @@ try {
         throw "Remote URL mismatch. Expected '$ExpectedRemote', got '$actualRemote'."
     }
 
-    $syncTime = Add-SyncLogEntry
+    $syncTime = Add-SyncLogEntry -Reason $TriggerReason
 
     $status = (Invoke-Git @("status", "--porcelain") | Out-String).Trim()
     $aheadCount = 0
@@ -127,7 +181,7 @@ try {
             Write-Log "No staged changes after add. Nothing to commit."
         }
         else {
-            $commitMessage = "chore: auto sync on logon $syncTime"
+            $commitMessage = "chore: auto sync on $($TriggerReason.ToLower()) $syncTime"
             Invoke-Git @("commit", "-m", $commitMessage) | Out-Null
             Write-Log "Committed: $commitMessage"
         }
@@ -138,14 +192,14 @@ try {
 
     Write-Log "Syncing with remote before push."
     try {
-        Invoke-Git @("pull", "--rebase", "origin", $Branch) | Out-Null
+        Invoke-GitWithRetry -GitArgs @("pull", "--rebase", "origin", $Branch) -OperationName "Pull --rebase" | Out-Null
     }
     catch {
         Write-Log "Pull --rebase failed (possible merge conflict). Resolve manually and retry. $($_.Exception.Message)" "ERROR"
         exit 1
     }
 
-    Invoke-Git @("push", "origin", $Branch) | Out-Null
+    Invoke-GitWithRetry -GitArgs @("push", "origin", $Branch) -OperationName "Push" | Out-Null
     Write-Log "Pushed to origin/$Branch successfully."
     exit 0
 }
