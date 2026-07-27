@@ -68,6 +68,19 @@ function Set-SyncState {
     $state | ConvertTo-Json | Set-Content -Path $StateFile -Encoding UTF8
 }
 
+function Test-HasUnpushedCommits {
+    $prevErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $tracking = (& git -C $RepoPath rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>&1 | Out-String).Trim()
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($tracking)) {
+        $ErrorActionPreference = $prevErrorAction
+        return $false
+    }
+    $count = [int](& git -C $RepoPath rev-list --count "$tracking..HEAD" 2>&1 | Out-String).Trim()
+    $ErrorActionPreference = $prevErrorAction
+    return ($LASTEXITCODE -eq 0) -and ($count -gt 0)
+}
+
 function Test-HasRealWorkChanges {
     $prevErrorAction = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
@@ -96,14 +109,9 @@ function Test-ShouldSync {
         return $true
     }
 
-    $bootUtc = Get-BootTimeUtc
-    $state = Get-SyncState
-
     if ($Reason -eq "Logon") {
-        if ($null -eq $state -or $state.lastBootUtc -ne $bootUtc) {
-            Write-WatcherLog "Fresh boot detected. Sync allowed."
-            return $true
-        }
+        Write-WatcherLog "Logon trigger: sync always allowed."
+        return $true
     }
 
     if (Test-HasRealWorkChanges) {
@@ -111,6 +119,12 @@ function Test-ShouldSync {
         return $true
     }
 
+    if (Test-HasUnpushedCommits) {
+        Write-WatcherLog "Unpushed commits detected. Sync allowed."
+        return $true
+    }
+
+    $state = Get-SyncState
     if ($null -ne $state -and $state.lastSuccessUtc) {
         $lastSuccess = [DateTime]::Parse($state.lastSuccessUtc).ToUniversalTime()
         $elapsed = ([DateTime]::UtcNow - $lastSuccess).TotalMinutes
@@ -140,7 +154,7 @@ function Wait-ForNetwork {
 
         if (-not $pingOk) {
             try {
-                $tcp = Test-NetConnection -ComputerName "github.com" -Port 22 -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                $tcp = Test-NetConnection -ComputerName "ssh.github.com" -Port 443 -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 $tcpOk = $tcp.TcpTestSucceeded
             }
             catch { }

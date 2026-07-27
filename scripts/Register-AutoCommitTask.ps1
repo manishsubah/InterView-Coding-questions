@@ -1,31 +1,35 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Registers the InterViewCoding logon/wake/unlock auto-commit watcher.
-.DESCRIPTION
-    Installs a Startup shortcut that launches AutoCommitWatcher.ps1.
-    Also attempts a multi-trigger scheduled task if permissions allow.
+    Registers the InterViewCoding auto-commit watcher and daily backup task.
 .PARAMETER Unregister
-    Remove the scheduled task, Startup shortcut, and watcher lock file.
+    Remove scheduled tasks, Startup shortcut, and watcher lock file.
+.PARAMETER DailyTime
+    Daily backup time in HH:mm format (default 21:00 / 9 PM).
 #>
 
 param(
-    [switch]$Unregister
+    [switch]$Unregister,
+    [string]$DailyTime = "21:00"
 )
 
 $ErrorActionPreference = "Stop"
 
 $RepoPath = "C:\SUBAH\PROGRAMMING\InterViewCoding"
 $TaskName = "InterViewCoding-LogonAutoCommit"
+$DailyTaskName = "InterViewCoding-DailyAutoCommit"
 $OldTaskName = "InterViewCoding-DailyAutoCommit"
-$WatcherPath = "C:\SUBAH\PROGRAMMING\InterViewCoding\scripts\AutoCommitWatcher.ps1"
-$LauncherPath = "C:\SUBAH\PROGRAMMING\InterViewCoding\scripts\Start-AutoCommitOnLogon.ps1"
+$WatcherPath = Join-Path $RepoPath "scripts\AutoCommitWatcher.ps1"
+$LauncherPath = Join-Path $RepoPath "scripts\Start-AutoCommitOnLogon.ps1"
+$SyncScript = Join-Path $RepoPath "scripts\Invoke-AutoCommitSync.ps1"
 $StartupShortcutName = "InterViewCoding-AutoCommit.lnk"
 $TaskXmlPath = Join-Path $env:TEMP "InterViewCoding-LogonAutoCommit.xml"
 $WatcherLockFile = Join-Path $env:TEMP "InterViewCoding-watcher.lock"
 $UserName = "$env:USERDOMAIN\$env:USERNAME"
 $StartupFolder = [Environment]::GetFolderPath("Startup")
 $StartupShortcutPath = Join-Path $StartupFolder $StartupShortcutName
+$SshKeyPath = "C:/Users/manis/.ssh/id_ed25519_interviewcoding"
+$SshCommand = "ssh -i $SshKeyPath -p 443 -o IdentitiesOnly=yes -o HostName=ssh.github.com"
 
 function Remove-TaskIfExists {
     param([string]$Name)
@@ -55,10 +59,19 @@ function Install-StartupShortcut {
     $shortcut = $shell.CreateShortcut($StartupShortcutPath)
     $shortcut.TargetPath = "powershell.exe"
     $shortcut.Arguments = "-WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File `"$LauncherPath`""
-    $shortcut.WorkingDirectory = "C:\SUBAH\PROGRAMMING\InterViewCoding"
+    $shortcut.WorkingDirectory = $RepoPath
     $shortcut.Description = "InterViewCoding auto-commit watcher (logon, wake, unlock)"
     $shortcut.Save()
     Write-Host "Installed Startup shortcut: $StartupShortcutPath"
+}
+
+function Install-DailyBackupTask {
+    $taskCommand = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$SyncScript`" -TriggerReason Manual -Force"
+    $result = cmd /c "schtasks /Create /TN `"$DailyTaskName`" /TR `"$taskCommand`" /SC DAILY /ST $DailyTime /RL LIMITED /F" 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Daily backup task registration failed: $result"
+    }
+    Write-Host "Installed daily backup task '$DailyTaskName' at $DailyTime."
 }
 
 function Install-MultiTriggerTask {
@@ -125,9 +138,14 @@ function Install-MultiTriggerTask {
     }
 }
 
+function Ensure-GitSshConfig {
+    & git -C $RepoPath config core.sshCommand $SshCommand
+    Write-Host "Configured git SSH over port 443 for this repo."
+}
+
 if ($Unregister) {
     Remove-TaskIfExists -Name $TaskName
-    Remove-TaskIfExists -Name $OldTaskName
+    Remove-TaskIfExists -Name $DailyTaskName
     Remove-StartupShortcut
     Remove-WatcherLock
     Write-Host "Auto-commit watcher unregistered."
@@ -138,10 +156,12 @@ if (-not (Test-Path $WatcherPath)) {
     throw "Watcher not found: $WatcherPath"
 }
 
-Remove-TaskIfExists -Name $OldTaskName
 Remove-TaskIfExists -Name $TaskName
+Remove-TaskIfExists -Name $DailyTaskName
 Remove-StartupShortcut
 Remove-WatcherLock
+
+Ensure-GitSshConfig
 
 $registeredVia = @()
 
@@ -150,17 +170,27 @@ try {
     $registeredVia += "scheduled task '$TaskName'"
 }
 catch {
-    Write-Host "Scheduled task not available ($($_.Exception.Message))."
+    Write-Host "Multi-trigger task not available ($($_.Exception.Message))."
+}
+
+try {
+    Install-DailyBackupTask
+    $registeredVia += "daily backup task '$DailyTaskName' at $DailyTime"
+}
+catch {
+    Write-Host "Daily backup task not available ($($_.Exception.Message))."
 }
 
 Install-StartupShortcut
 $registeredVia += "Startup shortcut '$StartupShortcutName'"
 
 Write-Host ""
-Write-Host "Auto-commit watcher registered via: $($registeredVia -join ' + ')"
-Write-Host "  Triggers:  Logon, sleep/wake (power resume), session unlock"
-Write-Host "  Cooldown:  30 minutes between automatic syncs (unless code changed)"
-Write-Host "  Watcher:   $WatcherPath"
+Write-Host "Auto-commit registered via: $($registeredVia -join ' + ')"
+Write-Host "  Logon:     delayed sync (60s) + watcher timer (30s)"
+Write-Host "  Wake:      power resume event"
+Write-Host "  Unlock:    session unlock event"
+Write-Host "  Fallback:  hourly check + daily task at $DailyTime"
+Write-Host "  SSH:       port 443 (ssh.github.com)"
 Write-Host ""
-Write-Host "Test manual sync:  powershell -File `"$RepoPath\scripts\Invoke-AutoCommitSync.ps1`" -TriggerReason Manual -Force"
+Write-Host "Test manual sync:  powershell -File `"$SyncScript`" -TriggerReason Manual -Force"
 Write-Host "Remove:            powershell -File `"$PSCommandPath`" -Unregister"

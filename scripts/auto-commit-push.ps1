@@ -26,8 +26,17 @@ $LockFile = Join-Path $env:TEMP "InterViewCoding-auto-commit.lock"
 $MaxLogBytes = 1MB
 $GitRetryAttempts = 3
 $GitRetryDelaySeconds = 30
+$SshKeyPath = "C:/Users/manis/.ssh/id_ed25519_interviewcoding"
+$SshCommand = "ssh -i $SshKeyPath -p 443 -o IdentitiesOnly=yes -o HostName=ssh.github.com"
 
 $env:GIT_TERMINAL_PROMPT = "0"
+
+function Ensure-GitSshConfig {
+    $current = (& git -C $RepoPath config --local core.sshCommand 2>&1 | Out-String).Trim()
+    if ($current -ne $SshCommand) {
+        & git -C $RepoPath config core.sshCommand $SshCommand
+    }
+}
 
 function Write-Log {
     param([string]$Message, [string]$Level = "INFO")
@@ -66,7 +75,8 @@ function Test-IsNetworkError {
         "Connection refused",
         "Network is unreachable",
         "Failed to connect",
-        "ssh: connect to host"
+        "ssh: connect to host",
+        "Could not read from remote repository"
     )
     foreach ($pattern in $patterns) {
         if ($Message -like "*$pattern*") {
@@ -147,6 +157,8 @@ try {
     if (-not (Test-Path (Join-Path $RepoPath ".git"))) {
         throw "Not a git repository: $RepoPath"
     }
+
+    Ensure-GitSshConfig
 
     $actualRemote = (Invoke-Git @("remote", "get-url", "origin") | Out-String).Trim()
     if ($actualRemote -ne $ExpectedRemote) {
