@@ -9,3 +9,6 @@
 
 ## 2026-11-20
 - [voice] this is the man speaking not going forward in this world to Japan <!-- pushId:15c05d88-04d6-4f27-a28c-1514b26c27a1 -->
+
+## 2026-11-24
+- [voice] hello can we talk in English <!-- pushId:9c0a70e8-5d1e-4725-a37d-d2d0d6725e6a -->
